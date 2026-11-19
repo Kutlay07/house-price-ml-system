@@ -1,0 +1,40 @@
+services:
+  api:
+    build: .
+    container_name: house-price-api
+    ports:
+      - "8000:8000"
+
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    container_name: house-price-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana:13.3.0
+    container_name: house-price-grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: house-price-ui
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000/predict
+    depends_on:
+      - api
+volumes:
+  grafana-data:

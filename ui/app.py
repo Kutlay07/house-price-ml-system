@@ -1,3 +1,4 @@
+import os
 import json
 import random
 
@@ -6,7 +7,10 @@ import requests
 import streamlit as st
 
 
-API_URL = "http://localhost:8000/predict"
+API_URL = os.getenv(
+    "API_URL",
+    "http://localhost:8000/predict",
+)
 
 
 st.title("House Price Prediction")
