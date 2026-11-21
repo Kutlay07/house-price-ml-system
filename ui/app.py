@@ -1,12 +1,11 @@
-import os
 import json
+import os
 import random
 from pathlib import Path
 
 import pandas as pd
 import requests
 import streamlit as st
-
 
 API_URL = st.secrets.get(
     "API_URL",
@@ -173,7 +172,7 @@ if st.button("Predict"):
             response = requests.post(
                 API_URL,
                 json=payload,
-                timeout=10
+                timeout=60
             )
 
         if response.status_code == 200:
@@ -192,5 +191,6 @@ if st.button("Predict"):
 
     except requests.RequestException:
         st.error(
-            "Could not connect to the prediction API."
+            "The prediction API may be waking up from sleep. "
+            "Please wait a few seconds and try again."
         )
