@@ -1,15 +1,19 @@
 import os
 import json
 import random
+from pathlib import Path
 
 import pandas as pd
 import requests
 import streamlit as st
 
 
-API_URL = os.getenv(
+API_URL = st.secrets.get(
     "API_URL",
-    "http://localhost:8000/predict",
+    os.getenv(
+        "API_URL",
+        "http://localhost:8000/predict"
+    ),
 )
 
 
@@ -20,7 +24,16 @@ st.write(
     "or generate random variation."
 )
 
-df = pd.read_csv("tests/fixtures/sample_houses.csv")
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+SAMPLE_HOUSES_PATH = (
+    BASE_DIR
+    / "tests"
+    / "fixtures"
+    / "sample_houses.csv"
+)
+
+df = pd.read_csv(SAMPLE_HOUSES_PATH)
 
 # ------------------
 # Session State
@@ -46,7 +59,6 @@ selected_row = df.iloc[house_option]
 # -------------------
 
 if st.button("Generate Random House"):
-    st.session_state.house_index = random.randrange(len(df))
     st.session_state.random_values = {
         "LotArea": random.randint(5000, 20000),
         "OverallQual": random.randint(3, 9),
@@ -110,15 +122,13 @@ with col1:
     gr_liv_area = st.number_input(
         "Living Area",
         min_value=0,
-        value=int(selected_row["GrLivArea"]),
-        key=f"gr_liv_area_{house_option}"
+        value=gr_liv_area_default,
     )
 
     full_bath = st.number_input(
         "Full Bathrooms",
         min_value=0,
-        value=int(selected_row["FullBath"]),
-        key=f"full_bath_{house_option}"
+        value=full_bath_default,
     )
 
 with col2:
