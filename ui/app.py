@@ -7,13 +7,13 @@ import pandas as pd
 import requests
 import streamlit as st
 
-API_URL = st.secrets.get(
-    "API_URL",
-    os.getenv(
-        "API_URL",
-        "http://localhost:8000/predict"
-    ),
-)
+API_URL = os.getenv("API_URL")
+
+if not API_URL:
+    try:
+        API_URL = st.secrets["API_URL"]
+    except (FileNotFoundError, KeyError):
+        API_URL = "http://localhost:8000/predict"
 
 
 st.title("House Price Prediction")
