@@ -22,3 +22,8 @@ models/*.json
 # Logs
 *.log
 logs/
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*

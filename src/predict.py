@@ -1,3 +1,5 @@
+import os
+import urllib.request
 from pathlib import Path
 
 import joblib
@@ -7,12 +9,33 @@ import pandas as pd
 from src.features import prepare_features
 
 
-MODEL_PATH = Path("models/house_price_pipeline.joblib")
+MODEL_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "models"
+    / "house_price_pipeline.joblib"
+)
+
+DEFAULT_MODEL_URL = (
+    "https://github.com/Kutlay07/house-price-ml-system/"
+    "releases/download/model-v1/house_price_pipeline.joblib"
+)
+
+MODEL_URL = os.getenv("MODEL_URL", DEFAULT_MODEL_URL)
+
+def ensure_model():
+    if MODEL_PATH.exists():
+        return
+
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    print(f"Downloading model from {MODEL_URL}...", flush=True)
+    urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+    print("Model downloaded successfully.", flush=True)
 
 
 def load_model():
-    model = joblib.load(MODEL_PATH)
-    return model
+    ensure_model()
+    return joblib.load(MODEL_PATH)
 
 
 def predict_price(model, raw_df):
